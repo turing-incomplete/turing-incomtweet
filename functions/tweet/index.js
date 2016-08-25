@@ -22,10 +22,10 @@ function parseEpisode(data) {
   var episodeNumber = splitData[episodeIndex].substring(9)
 
   var episodeTitleIndex = findKey(splitData, 'tweet_title')
-  var episodeTitle = splitData[episodeIndex].substring(13)
+  var episodeTitle = splitData[episodeTitleIndex].substring(13)
 
   var episodeTextIndex = findKey(splitData, 'tweet_text')
-  var episodeText = splitData[episodeIndex].substring(12)
+  var episodeText = splitData[episodeTextIndex].substring(12)
 
   return {
     episode: episodeNumber,
@@ -47,11 +47,14 @@ function tweetEpisode(text){
     method: 'POST',
     headers: {'content-type' : 'application/x-www-form-urlencoded'}
   }, (res) => {
-    console.log('statusCode:', res.statusCode);
-    //console.log('headers:', res.headers);
+    var str = ''
 
-    res.on('data', (d) => {
-      process.stdout.write(d);
+    res.on('data', function (chunk) {
+      str += chunk
+    })
+
+    res.on('end', function () {
+      console.log(str)
     })
   })
 
@@ -75,7 +78,7 @@ exports.handle = function(event, ctx, cb) {
         hostname: githubBase,
         path: `${githubBasePath}${el}`,
         port: 443,
-        method: 'GET',
+        method: 'GET'
       }, (res) => {
         var str = '';
 
